@@ -2,10 +2,7 @@ import Link from "next/link";
 import { ToastRecord } from "@/lib/types";
 import ToastStamp from "./toast-stamp";
 import TierBadge from "./tier-badge";
-import JudgeAvatar from "./judge-avatar";
-import type { JudgeName } from "@/lib/types";
-
-const judges: JudgeName[] = ["jp", "nana", "chad"];
+import { JudgeIconRow } from "./judge-avatar";
 
 export default function HeroSection({ toast }: { toast: ToastRecord | null }) {
   return (
@@ -58,13 +55,15 @@ export default function HeroSection({ toast }: { toast: ToastRecord | null }) {
             style={{
               display: "flex",
               justifyContent: "center",
-              gap: 8,
               marginTop: 12,
             }}
           >
-            {judges.map((j) => (
-              <JudgeAvatar key={j} judge={j} size={24} />
-            ))}
+            <JudgeIconRow
+              jpTqi={toast.jp_tqi}
+              nanaTqi={toast.nana_tqi}
+              chadTqi={toast.chad_tqi}
+              size={24}
+            />
           </div>
         </>
       ) : (

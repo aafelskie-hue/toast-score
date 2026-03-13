@@ -16,6 +16,7 @@ interface VerdictCardProps {
   failed: boolean;
   animationDelay?: number;
   shareUrl?: string;
+  isWinner?: boolean;
 }
 
 const FAILURE_MESSAGES: Record<JudgeName, string> = {
@@ -67,6 +68,7 @@ export default function VerdictCard({
   failed,
   animationDelay = 0,
   shareUrl,
+  isWinner = false,
 }: VerdictCardProps) {
   const [metricsOpen, setMetricsOpen] = useState(false);
 
@@ -81,6 +83,7 @@ export default function VerdictCard({
           boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
           overflow: "hidden",
           opacity: failed ? 0.5 : undefined,
+          borderTop: isWinner ? "3px solid var(--pink)" : undefined,
         } as React.CSSProperties
       }
     >

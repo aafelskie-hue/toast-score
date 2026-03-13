@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ToastRecord } from "@/lib/types";
 import TierBadge from "./tier-badge";
+import { JudgeIconRow } from "./judge-avatar";
 
 export default function ToastCard({ toast }: { toast: ToastRecord }) {
   return (
@@ -38,6 +39,14 @@ export default function ToastCard({ toast }: { toast: ToastRecord }) {
             {toast.official_tqi.toFixed(2)}
           </span>
           <TierBadge tier={toast.official_tier} />
+        </div>
+        <div style={{ marginTop: 6 }}>
+          <JudgeIconRow
+            jpTqi={toast.jp_tqi}
+            nanaTqi={toast.nana_tqi}
+            chadTqi={toast.chad_tqi}
+            size={20}
+          />
         </div>
       </div>
     </Link>

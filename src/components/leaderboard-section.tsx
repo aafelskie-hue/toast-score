@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ToastRecord } from "@/lib/types";
 import TierBadge from "./tier-badge";
+import { JudgeIconRow } from "./judge-avatar";
 
 type Period = "today" | "week" | "alltime";
 
@@ -153,6 +154,14 @@ export default function LeaderboardSection({
                 <span style={{ fontWeight: 500, fontSize: 16, flexShrink: 0 }}>
                   {toast.official_tqi.toFixed(2)}
                 </span>
+                <div style={{ flexShrink: 0 }}>
+                  <JudgeIconRow
+                    jpTqi={toast.jp_tqi}
+                    nanaTqi={toast.nana_tqi}
+                    chadTqi={toast.chad_tqi}
+                    size={18}
+                  />
+                </div>
                 <div className="hidden md:block" style={{ flexShrink: 0 }}>
                   <TierBadge tier={toast.official_tier} />
                 </div>
