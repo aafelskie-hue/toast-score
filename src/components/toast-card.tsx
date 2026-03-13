@@ -14,6 +14,7 @@ export default function ToastCard({ toast }: { toast: ToastRecord }) {
           backgroundColor: "var(--off-white)",
           borderRadius: 12,
           padding: 12,
+          overflow: "hidden",
         }}
       >
         <img
@@ -27,15 +28,8 @@ export default function ToastCard({ toast }: { toast: ToastRecord }) {
             display: "block",
           }}
         />
-        <div
-          style={{
-            display: "flex",
-            alignItems: "baseline",
-            gap: 8,
-            marginTop: 8,
-          }}
-        >
-          <span style={{ fontWeight: 500, fontSize: 24 }}>
+        <div style={{ marginTop: 8 }}>
+          <span style={{ fontWeight: 500, fontSize: 24, display: "block" }}>
             {toast.official_tqi.toFixed(2)}
           </span>
           <TierBadge tier={toast.official_tier} />
