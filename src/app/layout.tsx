@@ -13,6 +13,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Toast Score",
   description: "AI-powered toast rating",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
