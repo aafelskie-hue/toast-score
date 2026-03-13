@@ -5,6 +5,8 @@ import LeaderboardSection from "@/components/leaderboard-section";
 import GallerySection from "@/components/gallery-section";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 export default async function Home() {
   const [topToast, leaderboardData, galleryData] = await Promise.all([

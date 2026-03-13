@@ -8,6 +8,8 @@ import ShareButton from "@/components/share-button";
 import TierBadge from "@/components/tier-badge";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 interface PageProps {
   params: Promise<{ id: string }>;
