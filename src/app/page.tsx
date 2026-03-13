@@ -4,6 +4,8 @@ import HeroSection from "@/components/hero-section";
 import LeaderboardSection from "@/components/leaderboard-section";
 import GallerySection from "@/components/gallery-section";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const [topToast, leaderboardData, galleryData] = await Promise.all([
     getTopToastToday(),

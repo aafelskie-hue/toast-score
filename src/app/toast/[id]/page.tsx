@@ -7,6 +7,8 @@ import VerdictCard from "@/components/verdict-card";
 import ShareButton from "@/components/share-button";
 import TierBadge from "@/components/tier-badge";
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }

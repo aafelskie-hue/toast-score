@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+
+export const dynamic = "force-dynamic";
 import VerdictCard from "@/components/verdict-card";
 import ShareButton from "@/components/share-button";
 import TierBadge from "@/components/tier-badge";
