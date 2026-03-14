@@ -176,29 +176,29 @@ export default function VerdictCard({
               </>
             )}
 
+            {/* Stamp watermark — right-aligned, in its own row */}
+            {tqi !== null && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  marginTop: 12,
+                  pointerEvents: "none",
+                }}
+              >
+                <ToastStamp score={tqi} opacity={0.4} height={80} color="#D4537E" />
+              </div>
+            )}
+
+            {/* Share button row — full-width bottom of card */}
             {shareUrl && tqi !== null && (
-              <div style={{ marginBottom: 72 }}>
+              <div style={{ marginTop: 16 }}>
                 <VerdictShareActions cardRef={cardRef} url={shareUrl} judge={judge} tqi={tqi} />
               </div>
             )}
           </>
         )}
       </div>
-
-      {/* Stamp watermark — bottom right, behind content */}
-      {!failed && tqi !== null && (
-        <div
-          style={{
-            position: "absolute",
-            bottom: 8,
-            right: 8,
-            pointerEvents: "none",
-            zIndex: 0,
-          }}
-        >
-          <ToastStamp score={tqi} opacity={0.4} height={80} color="#D4537E" />
-        </div>
-      )}
     </div>
   );
 }
