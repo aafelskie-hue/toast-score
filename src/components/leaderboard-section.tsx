@@ -207,7 +207,7 @@ export default function LeaderboardSection({
                             key={name}
                             judge={name}
                             size={18}
-                            variant={name === harshest ? "highlighted" : "muted"}
+                            variant={toast[`${name}_tqi` as keyof typeof toast] !== null ? "default" : "muted"}
                           />
                         ))}
                       </div>

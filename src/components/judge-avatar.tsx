@@ -258,7 +258,7 @@ export function JudgeIconRow({ jpTqi, nanaTqi, chadTqi, size = 32 }: JudgeIconRo
           key={name}
           judge={name}
           size={size}
-          variant={!anyScored ? "muted" : tqi !== null ? "highlighted" : "muted"}
+          variant={!anyScored ? "muted" : tqi !== null ? "default" : "muted"}
         />
       ))}
     </div>
