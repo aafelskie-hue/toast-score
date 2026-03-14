@@ -134,8 +134,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 12. Official scores = max of successful judges
-  const officialTqi = Math.max(...successfulTqis);
+  // 12. Official scores = average of successful judges, rounded to 2 decimal places
+  const sum = successfulTqis.reduce((a, b) => a + b, 0);
+  const officialTqi = Math.round((sum / successfulTqis.length) * 100) / 100;
   const officialTier = deriveTier(officialTqi);
 
   // 13. Build DB row

@@ -4,7 +4,6 @@ import type { Metadata } from "next";
 import { getToastById } from "@/lib/queries";
 import type { JudgeName } from "@/lib/types";
 import VerdictCard from "@/components/verdict-card";
-import { getWinningJudge } from "@/components/judge-avatar";
 import ShareButton from "@/components/share-button";
 import TierBadge from "@/components/tier-badge";
 
@@ -72,7 +71,7 @@ export default async function ToastPage({ params }: PageProps) {
   }
 
   const judges: JudgeName[] = ["jp", "nana", "chad"];
-  const winner = getWinningJudge(toast.jp_tqi, toast.nana_tqi, toast.chad_tqi);
+  // Official TQI is the average of all judges — no single "winner"
 
   return (
     <main
@@ -147,7 +146,7 @@ export default async function ToastPage({ params }: PageProps) {
               failed={!verdict && !tqi}
               animationDelay={i * 150}
               shareUrl={`/toast/${id}`}
-              isWinner={judge === winner}
+              isWinner={false}
             />
           );
         })}

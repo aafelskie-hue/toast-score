@@ -244,21 +244,21 @@ interface JudgeIconRowProps {
 }
 
 export function JudgeIconRow({ jpTqi, nanaTqi, chadTqi, size = 32 }: JudgeIconRowProps) {
-  const winner = getWinningJudge(jpTqi, nanaTqi, chadTqi);
   const judges: [JudgeName, number | null][] = [
     ["jp", jpTqi],
     ["nana", nanaTqi],
     ["chad", chadTqi],
   ];
+  const anyScored = judges.some(([, tqi]) => tqi !== null);
 
   return (
     <div style={{ display: "flex", gap: 4 }}>
-      {judges.map(([name]) => (
+      {judges.map(([name, tqi]) => (
         <JudgeAvatar
           key={name}
           judge={name}
           size={size}
-          variant={winner === null ? "muted" : name === winner ? "highlighted" : "muted"}
+          variant={!anyScored ? "muted" : tqi !== null ? "highlighted" : "muted"}
         />
       ))}
     </div>
