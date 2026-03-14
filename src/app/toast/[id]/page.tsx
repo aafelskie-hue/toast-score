@@ -130,7 +130,7 @@ export default async function ToastPage({ params }: PageProps) {
 
       {/* Verdict Cards */}
       <div
-        className="grid grid-cols-1 md:grid-cols-3"
+        className="grid grid-cols-1 md:grid-cols-3 items-start"
         style={{ gap: 16, marginTop: 32 }}
       >
         {judges.map((judge, i) => {

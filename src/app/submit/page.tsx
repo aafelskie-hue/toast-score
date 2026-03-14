@@ -282,7 +282,7 @@ export default function SubmitPage() {
             </div>
 
             {/* Three verdict cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 mb-6 md:mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 items-start gap-2 md:gap-3 mb-6 md:mb-8">
               {judgeOrder.map((judge, index) => {
                 const judgeData = result.judges[judge];
                 return (
