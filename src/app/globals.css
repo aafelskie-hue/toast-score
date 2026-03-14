@@ -61,3 +61,18 @@ a:focus-visible {
   outline: 2px solid var(--pink);
   outline-offset: 2px;
 }
+
+.footer-instagram {
+  color: #111111;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+}
+
+.footer-instagram:hover {
+  opacity: 1;
+}
+
+.instagram-follow:hover {
+  color: var(--pink) !important;
+  opacity: 1;
+}
