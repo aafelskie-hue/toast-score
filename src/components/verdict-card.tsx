@@ -112,63 +112,39 @@ export default function VerdictCard({
               {verdict}
             </p>
 
-            {/* Mobile: TQI + tier stacked */}
-            <div className="md:hidden">
-              {tqi !== null && (
-                <div style={{ fontSize: 48, fontWeight: 500, lineHeight: 1, paddingBottom: 12 }}>
-                  {tqi.toFixed(2)}
-                </div>
-              )}
-              {tier && (
-                <div style={{ marginBottom: 8 }}>
-                  <TierBadge tier={tier} />
-                </div>
-              )}
-            </div>
-
-            {/* Desktop: TQI + tier stacked */}
-            <div className="hidden md:block">
-              {tqi !== null && (
-                <div className="text-6xl" style={{ fontWeight: 500, lineHeight: 1, paddingBottom: 14 }}>
-                  {tqi.toFixed(2)}
-                </div>
-              )}
-              {tier && (
-                <div style={{ marginBottom: 8 }}>
-                  <TierBadge tier={tier} />
-                </div>
-              )}
-            </div>
+            {/* TQI + tier */}
+            {tqi !== null && (
+              <div className="text-[48px] md:text-6xl" style={{ fontWeight: 500, lineHeight: 1, paddingBottom: 12 }}>
+                {tqi.toFixed(2)}
+              </div>
+            )}
+            {tier && (
+              <div style={{ marginBottom: 8 }}>
+                <TierBadge tier={tier} />
+              </div>
+            )}
 
             {/* Sub-metric bars */}
             {subMetrics && (
               <>
-                {/* Mobile: collapsible */}
-                <div className="md:hidden">
-                  <button
-                    onClick={() => setMetricsOpen(!metricsOpen)}
-                    style={{
-                      fontSize: 11,
-                      color: "var(--pink)",
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      padding: 0,
-                      marginBottom: metricsOpen ? 6 : 0,
-                    }}
-                  >
-                    {metricsOpen ? "Hide metrics" : "Show metrics"}
-                  </button>
-                  {metricsOpen && (
-                    <div>
-                      {Object.entries(subMetrics).map(([key, val]) => (
-                        <MetricBar key={key} label={METRIC_LABELS[key] || key} value={val} />
-                      ))}
-                    </div>
-                  )}
-                </div>
-                {/* Desktop: always visible */}
-                <div className="hidden md:block">
+                {/* Mobile: collapsible toggle */}
+                <button
+                  className="md:hidden"
+                  onClick={() => setMetricsOpen(!metricsOpen)}
+                  style={{
+                    fontSize: 11,
+                    color: "var(--pink)",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 0,
+                    marginBottom: metricsOpen ? 6 : 0,
+                  }}
+                >
+                  {metricsOpen ? "Hide metrics" : "Show metrics"}
+                </button>
+                {/* Mobile: visible when toggled. Desktop: always visible */}
+                <div className={metricsOpen ? "block" : "hidden md:block"}>
                   {Object.entries(subMetrics).map(([key, val]) => (
                     <MetricBar key={key} label={METRIC_LABELS[key] || key} value={val} />
                   ))}
