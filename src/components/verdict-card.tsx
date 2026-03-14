@@ -120,7 +120,7 @@ export default function VerdictCard({
                 </div>
               )}
               {tier && (
-                <div>
+                <div style={{ marginBottom: 8 }}>
                   <TierBadge tier={tier} />
                 </div>
               )}
@@ -134,7 +134,7 @@ export default function VerdictCard({
                 </div>
               )}
               {tier && (
-                <div style={{ marginBottom: 16 }}>
+                <div style={{ marginBottom: 8 }}>
                   <TierBadge tier={tier} />
                 </div>
               )}
@@ -168,7 +168,7 @@ export default function VerdictCard({
                   )}
                 </div>
                 {/* Desktop: always visible */}
-                <div className="hidden md:block mt-4">
+                <div className="hidden md:block">
                   {Object.entries(subMetrics).map(([key, val]) => (
                     <MetricBar key={key} label={METRIC_LABELS[key] || key} value={val} />
                   ))}
@@ -192,7 +192,7 @@ export default function VerdictCard({
 
             {/* Share button row — full-width bottom of card */}
             {shareUrl && tqi !== null && (
-              <div style={{ marginTop: 16 }}>
+              <div style={{ marginTop: 8, paddingBottom: 6 }}>
                 <VerdictShareActions cardRef={cardRef} url={shareUrl} judge={judge} tqi={tqi} />
               </div>
             )}
