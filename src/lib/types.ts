@@ -41,6 +41,8 @@ export interface ToastRecord {
   chad_tqi: number | null;
   chad_tier: string | null;
   chad_metrics: SubMetrics | null;
+  featured: boolean;
+  featured_category: string | null;
 }
 
 export interface BottomShelfToast extends ToastRecord {
