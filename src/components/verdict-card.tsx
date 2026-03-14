@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { JudgeName, SubMetrics } from "@/lib/types";
 import JudgeAvatar, { getJudgeDisplayName } from "./judge-avatar";
 import ToastStamp from "./toast-stamp";
 import TierBadge from "./tier-badge";
-import ShareButton from "./share-button";
+import VerdictShareActions from "./verdict-share-actions";
 
 interface VerdictCardProps {
   judge: JudgeName;
@@ -71,9 +71,11 @@ export default function VerdictCard({
   isWinner = false,
 }: VerdictCardProps) {
   const [metricsOpen, setMetricsOpen] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   return (
     <div
+      ref={cardRef}
       className="animate-fade-slide-up relative"
       style={
         {
@@ -170,13 +172,9 @@ export default function VerdictCard({
               </>
             )}
 
-            {shareUrl && (
-              <div style={{ marginBottom: tqi !== null ? 72 : undefined }}>
-                <ShareButton
-                  title={`Toast Score — ${getJudgeDisplayName(judge)}'s Verdict`}
-                  text={`${getJudgeDisplayName(judge)} rated this toast ${tqi?.toFixed(2)}. ${(verdict ?? "").split(".")[0]}.`}
-                  url={shareUrl}
-                />
+            {shareUrl && tqi !== null && (
+              <div style={{ marginBottom: 72 }}>
+                <VerdictShareActions cardRef={cardRef} url={shareUrl} judge={judge} tqi={tqi} />
               </div>
             )}
           </>

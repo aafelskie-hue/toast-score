@@ -25,7 +25,7 @@ export default function ShareButton({
   async function handleShare() {
     const absoluteUrl = window.location.origin + url;
 
-    if (navigator.share) {
+    if ('share' in navigator) {
       try {
         await navigator.share({ title, text, url: absoluteUrl });
         return;
