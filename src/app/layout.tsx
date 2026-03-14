@@ -13,10 +13,22 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Toast Score",
-  description: "AI-powered toast rating",
-  icons: {
-    icon: "/icon.svg",
+  title: "Toast Score — Official Toast Evaluation",
+  description: "Submit your toast. Three AI judges rate it. The world watches.",
+  icons: { icon: "/icon.svg" },
+  metadataBase: new URL("https://www.toastscore.com"),
+  openGraph: {
+    title: "Toast Score — Official Toast Evaluation",
+    description: "Submit your toast. Three AI judges rate it. The world watches.",
+    images: [{ url: "/api/og/default", width: 1200, height: 630 }],
+    type: "website",
+    url: "https://www.toastscore.com",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Toast Score — Official Toast Evaluation",
+    description: "Submit your toast. Three AI judges rate it. The world watches.",
+    images: ["/api/og/default"],
   },
 };
 

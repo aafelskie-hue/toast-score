@@ -15,6 +15,12 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+const JUDGE_DISPLAY: Record<string, string> = {
+  jp: "Jean-Pierre",
+  nana: "Nana",
+  chad: "Chad",
+};
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
@@ -29,6 +35,7 @@ export async function generateMetadata({
   const judges: JudgeName[] = ["jp", "nana", "chad"];
   let bestVerdict = "";
   let bestTqi = -1;
+  let bestJudge = "jp";
   for (const j of judges) {
     const tqi = toast[`${j}_tqi` as keyof typeof toast] as number | null;
     const verdict = toast[`${j}_verdict` as keyof typeof toast] as
@@ -37,27 +44,32 @@ export async function generateMetadata({
     if (tqi !== null && tqi > bestTqi && verdict) {
       bestTqi = tqi;
       bestVerdict = verdict;
+      bestJudge = j;
     }
   }
 
-  const description =
-    bestVerdict.length > 200
-      ? bestVerdict.slice(0, 197) + "..."
+  const verdictSnippet =
+    bestVerdict.length > 80
+      ? bestVerdict.slice(0, 80) + "..."
       : bestVerdict;
+  const judgeName = JUDGE_DISPLAY[bestJudge];
+  const title = `${toast.nickname}'s toast scored ${toast.official_tqi.toFixed(2)} — ${toast.official_tier}`;
+  const description = `${judgeName}: '${verdictSnippet}' | Rate your toast at toastscore.com`;
 
   return {
-    title: `Toast Score: ${toast.official_tqi.toFixed(2)} — ${toast.official_tier}`,
+    title,
     description,
     openGraph: {
-      title: `Toast Score: ${toast.official_tqi.toFixed(2)} — ${toast.official_tier}`,
+      title,
       description,
-      images: [{ url: toast.image_url }],
+      images: [{ url: `/api/og/${id}`, width: 1200, height: 630 }],
+      url: `https://www.toastscore.com/toast/${id}`,
     },
     twitter: {
       card: "summary_large_image",
-      title: `Toast Score: ${toast.official_tqi.toFixed(2)} — ${toast.official_tier}`,
+      title,
       description,
-      images: [toast.image_url],
+      images: [`/api/og/${id}`],
     },
   };
 }
