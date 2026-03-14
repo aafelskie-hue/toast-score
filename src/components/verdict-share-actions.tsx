@@ -40,15 +40,89 @@ export default function VerdictShareActions({
 
   async function handleSaveImage() {
     if (!cardRef.current) return;
-    const html2canvas = (await import("html2canvas")).default;
-    const canvas = await html2canvas(cardRef.current, {
-      backgroundColor: null,
-      scale: 2,
-    });
-    const link = document.createElement("a");
-    link.download = `toast-score-${judge}-${tqi}.png`;
-    link.href = canvas.toDataURL("image/png");
-    link.click();
+    try {
+      const captureWidth = cardRef.current.offsetWidth;
+      const captureHeight = cardRef.current.offsetHeight;
+
+      // Convert any CSS color to #rrggbb hex. Modern browsers return
+      // color(srgb ...) from getComputedStyle which html2canvas can't parse.
+      const probe = document.createElement("canvas");
+      probe.width = 1;
+      probe.height = 1;
+      const probeCtx = probe.getContext("2d")!;
+      function toSafeColor(cssColor: string): string {
+        probeCtx.clearRect(0, 0, 1, 1);
+        probeCtx.fillStyle = "#000000";
+        probeCtx.fillStyle = cssColor;
+        probeCtx.fillRect(0, 0, 1, 1);
+        const [r, g, b, a] = probeCtx.getImageData(0, 0, 1, 1).data;
+        if (a === 0) return "transparent";
+        if (a < 255) return `rgba(${r}, ${g}, ${b}, ${(a / 255).toFixed(2)})`;
+        return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)}`;
+      }
+
+      // Pre-read computed styles from the LIVE DOM before html2canvas clones it.
+      // The clone may lack full CSS context, so we capture colors from the original.
+      const origEls = [cardRef.current, ...Array.from(cardRef.current.querySelectorAll("*"))];
+      const styleMap: { color: string; bg: string; border: string; fill: string; stroke: string }[] = [];
+      for (const child of origEls) {
+        const computed = getComputedStyle(child);
+        styleMap.push({
+          color: toSafeColor(computed.color),
+          bg: toSafeColor(computed.backgroundColor),
+          border: toSafeColor(computed.borderColor),
+          fill: child instanceof SVGElement ? (computed.fill && computed.fill !== "none" ? toSafeColor(computed.fill) : "") : "",
+          stroke: child instanceof SVGElement ? (computed.stroke && computed.stroke !== "none" ? toSafeColor(computed.stroke) : "") : "",
+        });
+      }
+
+      const html2canvas = (await import("html2canvas")).default;
+      const canvas = await html2canvas(cardRef.current, {
+        scale: 2,
+        backgroundColor: "#F5F5F5",
+        logging: false,
+        useCORS: true,
+        width: captureWidth,
+        height: captureHeight + 24,
+        onclone: (_doc: Document, el: HTMLElement) => {
+          // Constrain capture to this card only
+          el.style.overflow = "hidden";
+          el.style.width = `${captureWidth}px`;
+
+          // Extra bottom padding so stamp isn't clipped
+          el.style.paddingBottom = "24px";
+
+          // Hide share actions row
+          const shareRow = el.querySelector("[aria-label='Save image']")?.parentElement;
+          if (shareRow) (shareRow as HTMLElement).style.display = "none";
+
+          // Force full opacity — the fade-in animation may leave opacity < 1
+          el.style.opacity = "1";
+          el.style.animation = "none";
+
+          // Apply pre-read hex colors from the live DOM onto cloned elements
+          const clonedEls = [el, ...Array.from(el.querySelectorAll("*"))];
+          for (let i = 0; i < clonedEls.length && i < styleMap.length; i++) {
+            const htmlChild = clonedEls[i] as HTMLElement;
+            const s = styleMap[i];
+            htmlChild.style.color = s.color;
+            htmlChild.style.backgroundColor = s.bg;
+            htmlChild.style.borderColor = s.border;
+            htmlChild.style.opacity = "1";
+            if (s.fill) htmlChild.style.fill = s.fill;
+            if (s.stroke) htmlChild.style.stroke = s.stroke;
+          }
+        },
+      });
+      const link = document.createElement("a");
+      link.download = `toast-score-${judge}-${tqi}.png`;
+      link.href = canvas.toDataURL("image/png");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error("[SaveImage] error:", err);
+    }
   }
 
   async function handleCopyLink() {

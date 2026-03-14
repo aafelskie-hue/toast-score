@@ -36,8 +36,8 @@ const METRIC_LABELS: Record<string, string> = {
 
 function MetricBar({ label, value }: { label: string; value: number }) {
   return (
-    <div className="mb-2">
-      <div className="flex justify-between" style={{ fontSize: 13 }}>
+    <div className="mb-3">
+      <div className="flex justify-between" style={{ fontSize: 13, position: "relative", zIndex: 1, marginBottom: 4 }}>
         <span>{label}</span>
         <span>{value.toFixed(1)}</span>
       </div>
@@ -112,25 +112,29 @@ export default function VerdictCard({
               {verdict}
             </p>
 
-            {/* Mobile: TQI + tier on one row */}
-            <div className="flex items-baseline gap-2 md:hidden">
+            {/* Mobile: TQI + tier stacked */}
+            <div className="md:hidden">
               {tqi !== null && (
-                <div style={{ fontSize: 48, fontWeight: 500, lineHeight: 1 }}>
+                <div style={{ fontSize: 48, fontWeight: 500, lineHeight: 1, paddingBottom: 12 }}>
                   {tqi.toFixed(2)}
                 </div>
               )}
-              {tier && <TierBadge tier={tier} />}
+              {tier && (
+                <div>
+                  <TierBadge tier={tier} />
+                </div>
+              )}
             </div>
 
             {/* Desktop: TQI + tier stacked */}
             <div className="hidden md:block">
               {tqi !== null && (
-                <div className="text-6xl" style={{ fontWeight: 500, lineHeight: 1 }}>
+                <div className="text-6xl" style={{ fontWeight: 500, lineHeight: 1, paddingBottom: 14 }}>
                   {tqi.toFixed(2)}
                 </div>
               )}
               {tier && (
-                <div className="mt-2 mb-4">
+                <div style={{ marginBottom: 16 }}>
                   <TierBadge tier={tier} />
                 </div>
               )}
