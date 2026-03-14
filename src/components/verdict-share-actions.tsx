@@ -171,7 +171,6 @@ export default function VerdictShareActions({
         display: "flex",
         justifyContent: "flex-end",
         gap: 8,
-        marginTop: 12,
       }}
     >
       {canShare && (
