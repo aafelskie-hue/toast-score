@@ -56,13 +56,24 @@ export async function POST(request: NextRequest) {
   const buffer = Buffer.from(arrayBuffer);
   const ext = imageFile.type === "image/png" ? "png" : "jpg";
 
-  // 6. Generate ID and upload to Supabase Storage
+  // 6. Strip metadata, resize, and compress for storage
+  const cleanBuffer = ext === "png"
+    ? await sharp(buffer)
+        .resize(1200, 1200, { fit: "inside", withoutEnlargement: true })
+        .png()
+        .toBuffer()
+    : await sharp(buffer)
+        .resize(1200, 1200, { fit: "inside", withoutEnlargement: true })
+        .jpeg({ quality: 80 })
+        .toBuffer();
+
+  // 7. Generate ID and upload to Supabase Storage
   const toastId = randomUUID();
   const supabase = getSupabaseServer();
 
   const { error: uploadError } = await supabase.storage
     .from("toast-images")
-    .upload(`toasts/${toastId}.${ext}`, buffer, {
+    .upload(`toasts/${toastId}.${ext}`, cleanBuffer, {
       contentType: imageFile.type,
       upsert: false,
     });
@@ -72,26 +83,26 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Failed to upload image" }, { status: 500 });
   }
 
-  // 7. Get public URL
+  // 8. Get public URL
   const { data: urlData } = supabase.storage
     .from("toast-images")
     .getPublicUrl(`toasts/${toastId}.${ext}`);
   const imageUrl = urlData.publicUrl;
 
-  // 8. Resize image for Anthropic API
-  const resizedBuffer = await sharp(buffer)
+  // 9. Resize image for Anthropic API
+  const resizedBuffer = await sharp(cleanBuffer)
     .resize(1024, 1024, { fit: "inside", withoutEnlargement: true })
     .jpeg({ quality: 80 })
     .toBuffer();
   const base64 = resizedBuffer.toString("base64");
 
-  // 9. Call all three judges in parallel
+  // 10. Call all three judges in parallel
   const judges: JudgeName[] = ["jp", "nana", "chad"];
   const results = await Promise.allSettled(
     judges.map((j) => callJudge(j, base64, "image/jpeg"))
   );
 
-  // 10. Process results
+  // 11. Process results
   const judgeResults: Record<string, JudgeResultData | null> = {};
   const successfulTqis: number[] = [];
 
@@ -123,11 +134,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 11. Official scores = max of successful judges
+  // 12. Official scores = max of successful judges
   const officialTqi = Math.max(...successfulTqis);
   const officialTier = deriveTier(officialTqi);
 
-  // 12. Build DB row
+  // 13. Build DB row
   const jp = judgeResults.jp;
   const nana = judgeResults.nana;
   const chad = judgeResults.chad;
@@ -160,7 +171,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Failed to save toast rating" }, { status: 500 });
   }
 
-  // 13. Return full result
+  // 14. Return full result
   return NextResponse.json({
     id: toastId,
     image_url: imageUrl,
