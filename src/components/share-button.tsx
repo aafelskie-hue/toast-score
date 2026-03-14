@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface ShareButtonProps {
   title: string;
@@ -16,6 +16,11 @@ export default function ShareButton({
   variant = "inline",
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
+  const [canShare, setCanShare] = useState(false);
+
+  useEffect(() => {
+    if (navigator.share) setCanShare(true);
+  }, []);
 
   async function handleShare() {
     const absoluteUrl = window.location.origin + url;
@@ -88,7 +93,7 @@ export default function ShareButton({
           <polyline points="16 6 12 2 8 6" />
           <line x1="12" y1="2" x2="12" y2="15" />
         </svg>
-        {copied ? "Copied!" : "Share"}
+        {copied ? "Copied!" : canShare ? "Share" : "Copy Link"}
       </button>
     </div>
   );
