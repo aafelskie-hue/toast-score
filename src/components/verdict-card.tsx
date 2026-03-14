@@ -88,7 +88,7 @@ export default function VerdictCard({
       }
     >
       {/* Card inner with responsive padding */}
-      <div className="p-2.5 md:p-6" style={{ position: "relative", zIndex: 1, paddingBottom: !failed && tqi !== null && shareUrl ? 48 : undefined }}>
+      <div className="p-2.5 md:p-6" style={{ position: "relative", zIndex: 1 }}>
         {/* Judge header */}
         <div className="flex items-center gap-1.5 md:gap-3 mb-1.5 md:mb-4">
           <div className="shrink-0 w-7 h-7 md:w-8 md:h-8">
@@ -171,11 +171,13 @@ export default function VerdictCard({
             )}
 
             {shareUrl && (
-              <ShareButton
-                title={`Toast Score — ${getJudgeDisplayName(judge)}'s Verdict`}
-                text={`${getJudgeDisplayName(judge)} rated this toast ${tqi?.toFixed(2)}. ${(verdict ?? "").split(".")[0]}.`}
-                url={shareUrl}
-              />
+              <div style={{ marginBottom: tqi !== null ? 48 : undefined }}>
+                <ShareButton
+                  title={`Toast Score — ${getJudgeDisplayName(judge)}'s Verdict`}
+                  text={`${getJudgeDisplayName(judge)} rated this toast ${tqi?.toFixed(2)}. ${(verdict ?? "").split(".")[0]}.`}
+                  url={shareUrl}
+                />
+              </div>
             )}
           </>
         )}
