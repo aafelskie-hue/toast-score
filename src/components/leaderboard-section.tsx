@@ -98,6 +98,10 @@ export default function LeaderboardSection({
         ))}
       </div>
 
+      <p style={{ fontSize: 13, fontWeight: 400, color: "#888780", margin: "0 0 8px 14px" }}>
+        {shelf === "top" ? "Highest official score" : "Lowest single judge score"}
+      </p>
+
       {/* Period Tabs */}
       <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
         {PERIOD_TABS.map((tab) => (
