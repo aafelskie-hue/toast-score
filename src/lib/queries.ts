@@ -1,5 +1,5 @@
 import { getSupabaseServer } from "./supabase-server";
-import { ToastRecord } from "./types";
+import { ToastRecord, BottomShelfToast } from "./types";
 
 export async function getTopToastToday(): Promise<ToastRecord | null> {
   const supabase = getSupabaseServer();
@@ -49,6 +49,31 @@ export async function getLeaderboard(
 
   if (error) return { toasts: [], total: 0 };
   return { toasts: (data as ToastRecord[]) || [], total: count || 0 };
+}
+
+export async function getBottomShelfLeaderboard(
+  period: string,
+  limit: number,
+  offset: number
+): Promise<{ toasts: BottomShelfToast[]; total: number }> {
+  const supabase = getSupabaseServer();
+  const dateFilter = getDateFilter(period);
+
+  // Get total count
+  let countQuery = supabase.from("toasts").select("*", { count: "exact", head: true });
+  if (dateFilter) countQuery = countQuery.gte("created_at", dateFilter);
+  const { count } = await countQuery;
+
+  // Get bottom shelf data via RPC
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase.rpc as any)("get_bottom_shelf", {
+    date_filter: dateFilter,
+    row_limit: limit,
+    row_offset: offset,
+  });
+
+  if (error) return { toasts: [], total: 0 };
+  return { toasts: (data as BottomShelfToast[]) || [], total: count || 0 };
 }
 
 export async function getGallery(

@@ -43,6 +43,11 @@ export interface ToastRecord {
   chad_metrics: SubMetrics | null;
 }
 
+export interface BottomShelfToast extends ToastRecord {
+  lowest_tqi: number;
+  harshest_judge: JudgeName;
+}
+
 export type Tier =
   | "Legendary"
   | "Golden"

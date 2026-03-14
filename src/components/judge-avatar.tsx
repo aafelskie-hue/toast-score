@@ -1,4 +1,4 @@
-import { JudgeName } from "@/lib/types";
+import { JudgeName, ToastRecord } from "@/lib/types";
 
 type JudgeAvatarVariant = "default" | "muted" | "highlighted";
 
@@ -180,6 +180,35 @@ export function getJudgeDisplayName(judge: JudgeName): string {
       return "Nana";
     case "chad":
       return "Chad";
+  }
+}
+
+// Tie-breaking: JP wins ties by iteration order. This matches the SQL
+// CASE WHEN evaluation order in get_bottom_shelf RPC. Do not reorder.
+export function getHarshestJudge(
+  jpTqi: number | null,
+  nanaTqi: number | null,
+  chadTqi: number | null
+): JudgeName | null {
+  const entries: [JudgeName, number | null][] = [
+    ["jp", jpTqi], ["nana", nanaTqi], ["chad", chadTqi],
+  ];
+  let harshest: JudgeName | null = null;
+  let lowest = Infinity;
+  for (const [name, tqi] of entries) {
+    if (tqi !== null && tqi < lowest) {
+      lowest = tqi;
+      harshest = name;
+    }
+  }
+  return harshest;
+}
+
+export function getJudgeVerdict(toast: ToastRecord, judge: JudgeName): string | null {
+  switch (judge) {
+    case "jp": return toast.jp_verdict;
+    case "nana": return toast.nana_verdict;
+    case "chad": return toast.chad_verdict;
   }
 }
 
