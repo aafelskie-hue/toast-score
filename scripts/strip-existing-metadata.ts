@@ -52,10 +52,12 @@ async function main() {
 
       const cleanBuffer = isPng
         ? await sharp(buffer)
+            .rotate()
             .resize(1200, 1200, { fit: "inside", withoutEnlargement: true })
             .png()
             .toBuffer()
         : await sharp(buffer)
+            .rotate()
             .resize(1200, 1200, { fit: "inside", withoutEnlargement: true })
             .jpeg({ quality: 80 })
             .toBuffer();

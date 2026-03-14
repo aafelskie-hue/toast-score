@@ -59,10 +59,12 @@ export async function POST(request: NextRequest) {
   // 6. Strip metadata, resize, and compress for storage
   const cleanBuffer = ext === "png"
     ? await sharp(buffer)
+        .rotate()
         .resize(1200, 1200, { fit: "inside", withoutEnlargement: true })
         .png()
         .toBuffer()
     : await sharp(buffer)
+        .rotate()
         .resize(1200, 1200, { fit: "inside", withoutEnlargement: true })
         .jpeg({ quality: 80 })
         .toBuffer();
