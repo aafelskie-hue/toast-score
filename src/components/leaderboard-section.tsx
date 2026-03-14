@@ -5,8 +5,7 @@ import Link from "next/link";
 import { ToastRecord, BottomShelfToast } from "@/lib/types";
 import { deriveTier } from "@/lib/tqi";
 import TierBadge from "./tier-badge";
-import { JudgeIconRow, getHarshestJudge, getJudgeVerdict } from "./judge-avatar";
-import JudgeAvatar from "./judge-avatar";
+import { getHarshestJudge, getJudgeVerdict } from "./judge-avatar";
 
 type Period = "today" | "week" | "alltime";
 type Shelf = "top" | "bottom";
@@ -199,27 +198,6 @@ export default function LeaderboardSection({
                   <span style={{ fontWeight: 500, fontSize: 16, flexShrink: 0 }}>
                     {displayTqi.toFixed(2)}
                   </span>
-                  <div style={{ flexShrink: 0 }}>
-                    {bottom ? (
-                      <div style={{ display: "flex", gap: 4 }}>
-                        {(["jp", "nana", "chad"] as const).map((name) => (
-                          <JudgeAvatar
-                            key={name}
-                            judge={name}
-                            size={18}
-                            variant={toast[`${name}_tqi` as keyof typeof toast] !== null ? "default" : "muted"}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <JudgeIconRow
-                        jpTqi={toast.jp_tqi}
-                        nanaTqi={toast.nana_tqi}
-                        chadTqi={toast.chad_tqi}
-                        size={18}
-                      />
-                    )}
-                  </div>
                   <div className="hidden md:block" style={{ flexShrink: 0 }}>
                     <TierBadge tier={displayTier} />
                   </div>
