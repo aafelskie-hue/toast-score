@@ -19,7 +19,7 @@ Every submission gets three verdicts. Three screenshots. Three reasons to share.
 1. User opens the app.
 2. User taps "Rate My Toast" and takes a photo or uploads one.
 3. All three AI judges analyze the image simultaneously.
-4. User receives three verdicts, each with its own TQI score. The highest TQI is the toast's official score.
+4. User receives three verdicts, each with its own TQI score. The average TQI across all judges is the toast's official score.
 5. The toast and all three verdicts are published to the public gallery and leaderboard.
 6. User shares individual verdict cards (optimized for screenshot and social sharing).
 
@@ -52,7 +52,7 @@ The landing page and primary discovery surface.
 - "Rate My Toast" CTA button — prominent, fixed on mobile.
 - Leaderboard table below the hero, defaulting to "Today" view.
 - Tab switcher: Today | This Week | All Time.
-- Leaderboard rows show: rank, toast thumbnail, nickname, all three judge icons, official TQI score (highest of three), tier badge.
+- Leaderboard rows show: rank, toast thumbnail, nickname, all three judge icons, official TQI score (average of judges), tier badge.
 - Below leaderboard: paginated gallery grid of recent submissions.
 - Each gallery card: toast image, three mini judge icons, official TQI score, tier badge.
 - Clicking any card navigates to its permalink.
@@ -86,7 +86,7 @@ The landing page and primary discovery surface.
   - Written verdict (2–4 sentences).
   - Sub-metric breakdown (six small bars). **On mobile composite view, sub-metric bars collapse behind a tap-to-expand.** This is required to fit three cards in a single mobile screenshot.
   - Individual share button for that specific verdict card.
-- Above the three cards: toast photo (square, prominent) and official TQI score (highest of the three).
+- Above the three cards: toast photo (square, prominent) and official TQI score (average of all judges).
 - Below the three cards:
   - "Share All" button (composite image of all three verdicts).
   - "Rate Another Toast" button (returns to Step 1).
@@ -98,7 +98,7 @@ The landing page and primary discovery surface.
 - Toast photo at top with official TQI score and tier badge.
 - All three verdict cards displayed below (same layout as submit Step 3).
 - Each verdict card is individually shareable.
-- Open Graph meta tags: toast image as `og:image`, official TQI score in `og:title`, highest-scoring judge's verdict excerpt as `og:description`.
+- Open Graph meta tags: toast image as `og:image`, official TQI score in `og:title`, first successful judge's verdict excerpt as `og:description`.
 - "Rate Your Own Toast" CTA below the cards.
 
 ---
@@ -132,7 +132,7 @@ Rendered to two decimal places.
 
 ### Official TQI
 
-The toast's official score for leaderboard ranking is the **highest TQI of the three judges**. This means Chad's relentless optimism might carry a mediocre toast onto the leaderboard while Jean-Pierre gave it a 34. That tension is the content.
+The toast's official score for leaderboard ranking is the **average TQI of all successful judges**, rounded to two decimal places. If one judge fails, the remaining two are averaged. If two fail, the surviving judge's TQI becomes the official score.
 
 ### Tier System
 
@@ -239,7 +239,7 @@ create table toasts (
   image_url text not null,
   nickname text not null default 'Anonymous Toaster',
 
-  -- Official score (highest TQI of the successful judges)
+  -- Official score (average TQI of the successful judges)
   official_tqi numeric(5,2) not null,
   official_tier text not null check (official_tier in ('legendary', 'golden', 'respectable', 'questionable', 'concerning', 'criminal')),
 
@@ -299,7 +299,7 @@ create index idx_toasts_official_tier on toasts (official_tier);
 5. For each settled promise: if fulfilled, parse and validate JSON. If rejected, mark that judge as failed.
 6. Recalculate each successful judge's TQI server-side from their sub-metrics.
 7. Derive each successful judge's tier from their recalculated TQI.
-8. Determine official TQI (highest of the successful judges) and official tier.
+8. Determine official TQI (average of the successful judges, rounded to 2 decimal places) and official tier.
 9. Insert single row into `toasts` table with all verdicts (null for failed judges).
 10. Return the full toast object to the client.
 
