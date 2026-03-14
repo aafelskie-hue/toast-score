@@ -88,7 +88,7 @@ export default function VerdictCard({
       }
     >
       {/* Card inner with responsive padding */}
-      <div className="p-2.5 md:p-6" style={{ position: "relative", zIndex: 1 }}>
+      <div className="p-2.5 md:p-6" style={{ position: "relative", zIndex: 1, paddingBottom: !failed && tqi !== null && shareUrl ? 48 : undefined }}>
         {/* Judge header */}
         <div className="flex items-center gap-1.5 md:gap-3 mb-1.5 md:mb-4">
           <div className="shrink-0 w-7 h-7 md:w-8 md:h-8">
