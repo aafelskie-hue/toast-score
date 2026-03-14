@@ -167,6 +167,8 @@ export default function VerdictCard({
                   justifyContent: "flex-end",
                   marginTop: 12,
                   pointerEvents: "none",
+                  height: 80,
+                  overflow: "hidden",
                 }}
               >
                 <ToastStamp score={tqi} opacity={0.4} height={80} color="#D4537E" />
