@@ -138,13 +138,20 @@ export default function VerdictCard({
                     border: "none",
                     cursor: "pointer",
                     padding: 0,
-                    marginBottom: metricsOpen ? 6 : 0,
                   }}
                 >
                   {metricsOpen ? "Hide metrics" : "Show metrics"}
                 </button>
-                {/* Mobile: visible when toggled. Desktop: always visible */}
-                <div className={metricsOpen ? "block" : "hidden md:block"}>
+                {/* Mobile: conditional render only when toggled open */}
+                {metricsOpen && (
+                  <div className="mt-1.5 md:hidden">
+                    {Object.entries(subMetrics).map(([key, val]) => (
+                      <MetricBar key={key} label={METRIC_LABELS[key] || key} value={val} />
+                    ))}
+                  </div>
+                )}
+                {/* Desktop: always visible — uses media query to avoid Tailwind hidden bug */}
+                <div className="metrics-desktop-only">
                   {Object.entries(subMetrics).map(([key, val]) => (
                     <MetricBar key={key} label={METRIC_LABELS[key] || key} value={val} />
                   ))}
