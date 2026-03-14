@@ -100,22 +100,22 @@ export default function HeroSection({ toast }: { toast: ToastRecord | null }) {
         >
           Rate My Toast
         </Link>
-        <p style={{ fontSize: 13, color: "#888780", marginTop: 12 }}>
-          Follow the results{" "}
-          <Link
-            href="https://instagram.com/toastscore"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="instagram-follow"
-            style={{
-              color: "#888780",
-              textDecoration: "none",
-            }}
-          >
-            @toastscore
-          </Link>
-        </p>
       </div>
+      <p style={{ fontSize: 13, color: "#888780", marginTop: 12 }}>
+        Follow the results{" "}
+        <Link
+          href="https://instagram.com/toastscore"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="instagram-follow"
+          style={{
+            color: "#888780",
+            textDecoration: "none",
+          }}
+        >
+          @toastscore
+        </Link>
+      </p>
     </section>
   );
 }
