@@ -171,7 +171,7 @@ export default function VerdictCard({
             )}
 
             {shareUrl && (
-              <div style={{ marginBottom: tqi !== null ? 48 : undefined }}>
+              <div style={{ marginBottom: tqi !== null ? 72 : undefined }}>
                 <ShareButton
                   title={`Toast Score — ${getJudgeDisplayName(judge)}'s Verdict`}
                   text={`${getJudgeDisplayName(judge)} rated this toast ${tqi?.toFixed(2)}. ${(verdict ?? "").split(".")[0]}.`}
