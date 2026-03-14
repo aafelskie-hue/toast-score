@@ -3,15 +3,12 @@ import { ToastRecord } from "./types";
 
 export async function getTopToastToday(): Promise<ToastRecord | null> {
   const supabase = getSupabaseServer();
-  const now = new Date();
-  const startOfDay = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
-  ).toISOString();
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
   const { data, error } = await supabase
     .from("toasts")
     .select("*")
-    .gte("created_at", startOfDay)
+    .gte("created_at", since)
     .order("official_tqi", { ascending: false })
     .limit(1)
     .single();
@@ -21,15 +18,11 @@ export async function getTopToastToday(): Promise<ToastRecord | null> {
 }
 
 function getDateFilter(period: string): string | null {
-  const now = new Date();
   if (period === "today") {
-    return new Date(
-      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
-    ).toISOString();
+    return new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   }
   if (period === "week") {
-    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    return weekAgo.toISOString();
+    return new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   }
   return null; // alltime
 }
