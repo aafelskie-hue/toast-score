@@ -137,6 +137,76 @@ export async function GET(
             </div>
           </div>
 
+          {/* Stamp watermark - bottom right */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 24,
+              right: 24,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 96,
+              height: 120,
+              border: "3px solid #CCCCCC",
+              borderRadius: 6,
+              transform: "rotate(-2.5deg)",
+            }}
+          >
+            <div
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                letterSpacing: 3,
+                color: "#CCCCCC",
+                display: "flex",
+              }}
+            >
+              TOAST
+            </div>
+            <div
+              style={{
+                width: 60,
+                height: 1,
+                backgroundColor: "#CCCCCC",
+                margin: "4px 0",
+                display: "flex",
+              }}
+            />
+            <div
+              style={{
+                fontSize: 22,
+                fontWeight: 500,
+                color: "#CCCCCC",
+                lineHeight: 1,
+                display: "flex",
+              }}
+            >
+              {toast.official_tqi.toFixed(0)}
+            </div>
+            <div
+              style={{
+                width: 60,
+                height: 1,
+                backgroundColor: "#CCCCCC",
+                margin: "4px 0",
+                display: "flex",
+              }}
+            />
+            <div
+              style={{
+                fontSize: 9,
+                fontWeight: 500,
+                letterSpacing: 2,
+                color: "#CCCCCC",
+                display: "flex",
+              }}
+            >
+              SCORE
+            </div>
+          </div>
+
           {/* toastscore.com footer */}
           <div
             style={{
