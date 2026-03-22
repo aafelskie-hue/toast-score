@@ -17,6 +17,7 @@ export const fetchCache = "force-no-store";
 
 interface PageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 function getVerdictsFromToast(toast: Awaited<ReturnType<typeof getToastById>>): JudgeVerdict[] {
@@ -96,8 +97,13 @@ export async function generateMetadata({
   };
 }
 
-export default async function ToastPage({ params }: PageProps) {
+export default async function ToastPage({ params, searchParams }: PageProps) {
   const { id } = await params;
+  const resolvedSearchParams = await searchParams;
+  const certificateSessionId =
+    typeof resolvedSearchParams.certificate_session_id === "string"
+      ? resolvedSearchParams.certificate_session_id
+      : undefined;
   const [toast, appeal, certificate, membership] = await Promise.all([
     getToastById(id),
     getAppealByToastId(id),
@@ -245,6 +251,7 @@ export default async function ToastPage({ params }: PageProps) {
               ? `/api/certificate/${id}?session_id=${certificate.stripe_session_id}`
               : null
           }
+          certificateSessionId={certificateSessionId}
         />
       </div>
 

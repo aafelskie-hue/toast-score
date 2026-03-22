@@ -167,18 +167,21 @@ const styles = StyleSheet.create({
     transform: "rotate(-2.5deg)",
   },
   stampOuter: {
+    width: 90,
+    height: 123,
     borderWidth: 3,
     borderColor: black,
     borderRadius: 2,
     padding: 3,
   },
   stampInner: {
+    flex: 1,
     borderWidth: 1,
     borderColor: black,
     borderRadius: 2,
-    paddingVertical: 6,
     paddingHorizontal: 10,
     alignItems: "center",
+    justifyContent: "center",
   },
   stampRule: {
     height: 1,

@@ -94,7 +94,7 @@ function getRedirectUrls(
       };
     case "certificate":
       return {
-        successUrl: `${origin}/api/certificate/${toastId}?session_id={CHECKOUT_SESSION_ID}`,
+        successUrl: `${origin}/toast/${toastId}?certificate_session_id={CHECKOUT_SESSION_ID}`,
         cancelUrl: `${origin}/toast/${toastId}`,
       };
   }

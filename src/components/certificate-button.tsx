@@ -1,19 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface CertificateButtonProps {
   toastId: string;
   hasCertificate: boolean;
   certificateUrl: string | null;
+  certificateSessionId?: string;
 }
 
 export default function CertificateButton({
   toastId,
   hasCertificate,
   certificateUrl,
+  certificateSessionId,
 }: CertificateButtonProps) {
   const [loading, setLoading] = useState(false);
+  const downloadTriggered = useRef(false);
+
+  // Auto-trigger certificate download after Stripe redirect
+  useEffect(() => {
+    if (certificateSessionId && !downloadTriggered.current) {
+      downloadTriggered.current = true;
+      window.location.href = `/api/certificate/${toastId}?session_id=${certificateSessionId}`;
+    }
+  }, [certificateSessionId, toastId]);
 
   if (hasCertificate && certificateUrl) {
     return (
