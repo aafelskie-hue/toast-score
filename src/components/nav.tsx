@@ -28,7 +28,7 @@ export default function Nav() {
       </Link>
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <MembershipLink />
-        <Link
+        <a
           href="/submit"
           style={{
             backgroundColor: "var(--pink)",
@@ -41,7 +41,7 @@ export default function Nav() {
           }}
         >
           Rate My Toast
-        </Link>
+        </a>
       </div>
     </nav>
   );
