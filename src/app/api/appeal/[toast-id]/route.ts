@@ -109,7 +109,7 @@ export async function POST(request: NextRequest, { params }: PageProps) {
   // 6. Run evaluation
   let result;
   try {
-    result = await runJudgePanel(judgeIds, base64, "image/jpeg");
+    result = await runJudgePanel(judgeIds, base64, "image/jpeg", true);
   } catch {
     return NextResponse.json(
       { error: "All judges are currently unavailable. Please toast responsibly." },

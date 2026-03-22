@@ -9,13 +9,20 @@ export interface EvaluationResult {
   officialTier: string;
 }
 
+const APPEAL_PROMPT = `This toast has already been evaluated and the submitter is formally appealing the verdict. This is a re-evaluation. React to the fact that your previous judgment is being challenged — stay in character. You may be harsher, more lenient, or reconsider, but acknowledge that this is an appeal in your verdict. Do not repeat any phrasing from a typical first evaluation. Your opening line should reference the appeal itself.
+
+Rate this toast.`;
+
 export async function runJudgePanel(
   judgeIds: JudgeId[],
   imageBase64: string,
-  mimeType: "image/jpeg" | "image/png"
+  mimeType: "image/jpeg" | "image/png",
+  isAppeal: boolean = false
 ): Promise<EvaluationResult> {
+  const userPrompt = isAppeal ? APPEAL_PROMPT : undefined;
+
   const results = await Promise.allSettled(
-    judgeIds.map((j) => callJudge(j, imageBase64, mimeType))
+    judgeIds.map((j) => callJudge(j, imageBase64, mimeType, userPrompt))
   );
 
   const verdicts: JudgeVerdict[] = [];

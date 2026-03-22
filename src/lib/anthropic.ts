@@ -22,7 +22,8 @@ function parseJsonResponse(text: string): { verdict: string; sub_metrics: SubMet
 async function callJudgeInternal(
   systemPrompt: string,
   imageBase64: string,
-  mimeType: "image/jpeg" | "image/png"
+  mimeType: "image/jpeg" | "image/png",
+  userPrompt: string = "Rate this toast."
 ): Promise<JudgeResponse> {
   const anthropic = getClient();
 
@@ -39,7 +40,7 @@ async function callJudgeInternal(
               type: "image",
               source: { type: "base64", media_type: mimeType, data: imageBase64 },
             },
-            { type: "text", text: "Rate this toast." },
+            { type: "text", text: userPrompt },
           ],
         },
       ],
@@ -77,11 +78,12 @@ async function callJudgeInternal(
 export async function callJudge(
   judge: JudgeId,
   imageBase64: string,
-  mimeType: "image/jpeg" | "image/png"
+  mimeType: "image/jpeg" | "image/png",
+  userPrompt?: string
 ): Promise<JudgeResponse> {
   const definition = JUDGES[judge];
   if (!definition) {
     throw new Error(`Unknown judge: ${judge}`);
   }
-  return callJudgeInternal(definition.systemPrompt, imageBase64, mimeType);
+  return callJudgeInternal(definition.systemPrompt, imageBase64, mimeType, userPrompt);
 }
