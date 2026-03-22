@@ -1,5 +1,5 @@
 import { getSupabaseServer } from "./supabase-server";
-import { ToastRecord, BottomShelfToast, JudgeName } from "./types";
+import { ToastRecord, BottomShelfToast, JudgeName, AppealRecord, CertificateRecord } from "./types";
 
 export async function getTopToastToday(): Promise<ToastRecord | null> {
   const supabase = getSupabaseServer();
@@ -183,6 +183,54 @@ export async function getCurationCandidates(): Promise<CurationCandidates> {
   }
 
   return { best, criminal, judgesPick };
+}
+
+export async function getAppealByToastId(
+  toastId: string
+): Promise<AppealRecord | null> {
+  const supabase = getSupabaseServer();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase.from("appeals") as any)
+    .select("*")
+    .eq("toast_id", toastId)
+    .single();
+
+  if (error || !data) return null;
+  return data as AppealRecord;
+}
+
+export async function getMemberFreeAppealThisMonth(
+  customerId: string
+): Promise<boolean> {
+  const supabase = getSupabaseServer();
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+    .toISOString()
+    .split("T")[0];
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (supabase.from("member_appeals") as any)
+    .select("id")
+    .eq("customer_id", customerId)
+    .eq("month_start", monthStart)
+    .eq("was_free", true)
+    .limit(1);
+
+  return (data?.length ?? 0) > 0;
+}
+
+export async function getCertificateByToastId(
+  toastId: string
+): Promise<CertificateRecord | null> {
+  const supabase = getSupabaseServer();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase.from("certificates") as any)
+    .select("*")
+    .eq("toast_id", toastId)
+    .single();
+
+  if (error || !data) return null;
+  return data as CertificateRecord;
 }
 
 export async function markAsFeatured(

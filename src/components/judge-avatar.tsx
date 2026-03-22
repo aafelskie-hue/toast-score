@@ -1,9 +1,10 @@
-import { JudgeName, ToastRecord } from "@/lib/types";
+import { type JudgeId } from "@/lib/judges";
+import { JudgeName, ToastRecord, JudgeVerdict } from "@/lib/types";
 
 type JudgeAvatarVariant = "default" | "muted" | "highlighted";
 
 interface JudgeAvatarProps {
-  judge: JudgeName;
+  judge: JudgeId;
   size?: number;
   variant?: JudgeAvatarVariant;
 }
@@ -158,6 +159,223 @@ function ChadSvg({ size, outline, accent, shapeFill }: SvgColorProps) {
   );
 }
 
+// ---------------------------------------------------------------------------
+// New member-only judge avatars
+// ---------------------------------------------------------------------------
+
+function MarcoSvg({ size, outline, accent, shapeFill }: SvgColorProps) {
+  const showDetail = size >= 40;
+  return (
+    <svg width={size} height={size} viewBox="-30 -30 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <clipPath id="marco-clip">
+          <circle cx="0" cy="0" r="30" />
+        </clipPath>
+      </defs>
+      <g clipPath="url(#marco-clip)">
+        <circle cx="0" cy="0" r="30" fill="#F5F5F5" />
+        {/* Shoulders/chef coat */}
+        <path d="M-30 16 Q-30 8 -16 6 L16 6 Q30 8 30 16 L30 34 L-30 34Z" fill={outline} />
+        {/* Open collar V — aggressive */}
+        <path d="M-8 6 L0 20 L8 6" fill="none" stroke={accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        {/* Kitchen towel over shoulder (accent) */}
+        <path d="M14 8 L22 4 L24 14 L16 16Z" fill={accent} />
+        {showDetail && (
+          <line x1="16" y1="7" x2="22" y2="11" stroke={accent} strokeWidth="0.6" opacity="0.5" />
+        )}
+        {/* Neck — thick, aggressive posture */}
+        <rect x="-8" y="0" width="16" height="10" rx="3" fill={outline} />
+        {/* Head */}
+        <ellipse cx="0" cy="-6" rx="15" ry="14" fill={outline} />
+        {/* Short cropped hair */}
+        <path d="M-15 -10 Q-15 -22 0 -24 Q15 -22 15 -10" fill={outline} />
+        {showDetail && (
+          <>
+            <line x1="-8" y1="-20" x2="-6" y2="-14" stroke={outline} strokeWidth="0.5" opacity="0.3" />
+            <line x1="0" y1="-22" x2="0" y2="-14" stroke={outline} strokeWidth="0.5" opacity="0.3" />
+            <line x1="8" y1="-20" x2="6" y2="-14" stroke={outline} strokeWidth="0.5" opacity="0.3" />
+          </>
+        )}
+        {/* Coat buttons */}
+        {showDetail && (
+          <>
+            <circle cx="-3" cy="14" r="1" fill={shapeFill} opacity="0.6" />
+            <circle cx="-3" cy="20" r="1" fill={shapeFill} opacity="0.6" />
+          </>
+        )}
+      </g>
+    </svg>
+  );
+}
+
+function ProfessorCrumbSvg({ size, outline, accent }: SvgColorProps) {
+  const showDetail = size >= 40;
+  return (
+    <svg width={size} height={size} viewBox="-30 -30 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <clipPath id="crumb-clip">
+          <circle cx="0" cy="0" r="30" />
+        </clipPath>
+      </defs>
+      <g clipPath="url(#crumb-clip)">
+        <circle cx="0" cy="0" r="30" fill="#F5F5F5" />
+        {/* Shoulders/academic robe */}
+        <path d="M-30 16 Q-30 8 -16 6 L16 6 Q30 8 30 16 L30 34 L-30 34Z" fill={outline} />
+        {/* Robe lapels */}
+        {showDetail && (
+          <>
+            <path d="M-6 6 L-8 24" fill="none" stroke={outline} strokeWidth="0.8" opacity="0.4" />
+            <path d="M6 6 L8 24" fill="none" stroke={outline} strokeWidth="0.8" opacity="0.4" />
+          </>
+        )}
+        {/* Neck */}
+        <rect x="-6" y="0" width="12" height="10" rx="3" fill={outline} />
+        {/* Head */}
+        <ellipse cx="0" cy="-6" rx="14" ry="13" fill={outline} />
+        {/* Mortarboard base */}
+        <path d="M-20 -18 L20 -18 L18 -14 L-18 -14Z" fill={outline} />
+        {/* Mortarboard top (flat) */}
+        <rect x="-20" y="-22" width="40" height="4" rx="1" fill={outline} />
+        {/* Tassel (accent) */}
+        <line x1="16" y1="-22" x2="22" y2="-12" stroke={accent} strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="16" cy="-22" r="2" fill={accent} />
+        {showDetail && (
+          <>
+            <line x1="22" y1="-12" x2="20" y2="-6" stroke={accent} strokeWidth="1" strokeLinecap="round" />
+            <line x1="22" y1="-12" x2="24" y2="-6" stroke={accent} strokeWidth="1" strokeLinecap="round" />
+          </>
+        )}
+      </g>
+    </svg>
+  );
+}
+
+function AuntieMeiSvg({ size, outline, accent }: SvgColorProps) {
+  const showDetail = size >= 40;
+  return (
+    <svg width={size} height={size} viewBox="-30 -30 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <clipPath id="mei-clip">
+          <circle cx="0" cy="0" r="30" />
+        </clipPath>
+      </defs>
+      <g clipPath="url(#mei-clip)">
+        <circle cx="0" cy="0" r="30" fill="#F5F5F5" />
+        {/* Shoulders/blouse */}
+        <path d="M-30 16 Q-30 8 -16 6 L16 6 Q30 8 30 16 L30 34 L-30 34Z" fill={outline} />
+        {/* Mandarin collar */}
+        <path d="M-6 4 L-6 -1 Q0 -3 6 -1 L6 4" fill="none" stroke={outline} strokeWidth="1.5" />
+        {/* Neck */}
+        <rect x="-6" y="0" width="12" height="8" rx="3" fill={outline} />
+        {/* Head — slightly rounder */}
+        <ellipse cx="0" cy="-6" rx="15" ry="14" fill={outline} />
+        {/* Hair — neat, parted */}
+        <ellipse cx="0" cy="-12" rx="16" ry="11" fill={outline} />
+        {/* Neat bun */}
+        <circle cx="0" cy="-26" r="7" fill={outline} />
+        {showDetail && (
+          <path d="M-2 -28 Q0 -31 2 -28 Q1 -24 -1 -25" fill="none" stroke={outline} strokeWidth="0.6" opacity="0.4" />
+        )}
+        {/* Decorative hair pin (accent) */}
+        <line x1="6" y1="-29" x2="10" y2="-22" stroke={accent} strokeWidth="1.8" strokeLinecap="round" />
+        <circle cx="6" cy="-29" r="2.5" fill={accent} />
+        {showDetail && (
+          <circle cx="8" cy="-30.5" r="1.2" fill={accent} opacity="0.7" />
+        )}
+        {/* Hair part line */}
+        {showDetail && (
+          <line x1="0" y1="-22" x2="0" y2="-14" stroke={outline} strokeWidth="0.6" opacity="0.4" />
+        )}
+      </g>
+    </svg>
+  );
+}
+
+function AlgorithmSvg({ size, outline, accent, shapeFill }: SvgColorProps) {
+  const showDetail = size >= 40;
+  return (
+    <svg width={size} height={size} viewBox="-30 -30 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <clipPath id="algo-clip">
+          <circle cx="0" cy="0" r="30" />
+        </clipPath>
+      </defs>
+      <g clipPath="url(#algo-clip)">
+        <circle cx="0" cy="0" r="30" fill="#F5F5F5" />
+        {/* Shoulders/hoodie */}
+        <path d="M-30 14 Q-30 6 -16 4 L16 4 Q30 6 30 14 L30 34 L-30 34Z" fill={outline} />
+        {/* Hoodie neckline/hood */}
+        <path d="M-12 4 Q-14 -2 -10 -4 L10 -4 Q14 -2 12 4" fill={outline} />
+        {/* Hoodie string */}
+        {showDetail && (
+          <>
+            <line x1="-4" y1="4" x2="-5" y2="14" stroke={shapeFill} strokeWidth="0.8" opacity="0.5" />
+            <line x1="4" y1="4" x2="5" y2="14" stroke={shapeFill} strokeWidth="0.8" opacity="0.5" />
+          </>
+        )}
+        {/* Neck */}
+        <rect x="-7" y="-2" width="14" height="10" rx="3" fill={outline} />
+        {/* Headphones around neck (accent) */}
+        <path d="M-14 2 Q-16 -2 -14 -6 L14 -6 Q16 -2 14 2" fill="none" stroke={accent} strokeWidth="2.5" strokeLinecap="round" />
+        {/* Headphone pads */}
+        <ellipse cx="-14" cy="2" rx="3" ry="4" fill={accent} />
+        <ellipse cx="14" cy="2" rx="3" ry="4" fill={accent} />
+        {/* Head */}
+        <ellipse cx="0" cy="-8" rx="14" ry="13" fill={outline} />
+        {/* Hood up behind head */}
+        <path d="M-16 -6 Q-16 -24 0 -26 Q16 -24 16 -6" fill={outline} />
+        {/* Hood edge detail */}
+        {showDetail && (
+          <path d="M-14 -4 Q-14 -20 0 -22 Q14 -20 14 -4" fill="none" stroke={outline} strokeWidth="0.6" opacity="0.4" />
+        )}
+      </g>
+    </svg>
+  );
+}
+
+function DetectiveRyeSvg({ size, outline, accent }: SvgColorProps) {
+  const showDetail = size >= 40;
+  return (
+    <svg width={size} height={size} viewBox="-30 -30 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <clipPath id="rye-clip">
+          <circle cx="0" cy="0" r="30" />
+        </clipPath>
+      </defs>
+      <g clipPath="url(#rye-clip)">
+        <circle cx="0" cy="0" r="30" fill="#F5F5F5" />
+        {/* Shoulders/trench coat */}
+        <path d="M-30 14 Q-30 6 -16 4 L16 4 Q30 6 30 14 L30 34 L-30 34Z" fill={outline} />
+        {/* Trench coat collar (popped) */}
+        <path d="M-12 4 L-14 -4 L-8 -2" fill={outline} />
+        <path d="M12 4 L14 -4 L8 -2" fill={outline} />
+        {/* Coat lapel lines */}
+        {showDetail && (
+          <>
+            <line x1="-6" y1="4" x2="-4" y2="20" stroke={outline} strokeWidth="0.8" opacity="0.4" />
+            <line x1="6" y1="4" x2="4" y2="20" stroke={outline} strokeWidth="0.8" opacity="0.4" />
+          </>
+        )}
+        {/* Neck */}
+        <rect x="-6" y="-2" width="12" height="10" rx="3" fill={outline} />
+        {/* Head */}
+        <ellipse cx="0" cy="-8" rx="14" ry="13" fill={outline} />
+        {/* Fedora crown */}
+        <path d="M-14 -14 Q-14 -28 0 -30 Q14 -28 14 -14Z" fill={outline} />
+        {/* Fedora crease */}
+        <path d="M-8 -26 L0 -22 L8 -26" fill="none" stroke={outline} strokeWidth="0.8" opacity="0.4" />
+        {/* Fedora brim */}
+        <path d="M-24 -14 Q-24 -18 -14 -16 L14 -16 Q24 -18 24 -14 Q24 -12 14 -13 L-14 -13 Q-24 -12 -24 -14Z" fill={outline} />
+        {/* Hat band (accent) */}
+        <rect x="-14" y="-17" width="28" height="3" rx="1" fill={accent} />
+        {showDetail && (
+          <rect x="8" y="-17" width="4" height="3" rx="0.5" fill={accent} opacity="0.7" />
+        )}
+      </g>
+    </svg>
+  );
+}
+
 export default function JudgeAvatar({ judge, size = 40, variant = "default" }: JudgeAvatarProps) {
   const { outline, accent, shapeFill } = VARIANT_COLORS[variant];
   const colorProps = { size, outline, accent, shapeFill };
@@ -169,18 +387,31 @@ export default function JudgeAvatar({ judge, size = 40, variant = "default" }: J
       return <NanaSvg {...colorProps} />;
     case "chad":
       return <ChadSvg {...colorProps} />;
+    case "marco":
+      return <MarcoSvg {...colorProps} />;
+    case "crumb":
+      return <ProfessorCrumbSvg {...colorProps} />;
+    case "mei":
+      return <AuntieMeiSvg {...colorProps} />;
+    case "algo":
+      return <AlgorithmSvg {...colorProps} />;
+    case "rye":
+      return <DetectiveRyeSvg {...colorProps} />;
   }
 }
 
-export function getJudgeDisplayName(judge: JudgeName): string {
-  switch (judge) {
-    case "jp":
-      return "Jean-Pierre";
-    case "nana":
-      return "Nana";
-    case "chad":
-      return "Chad";
-  }
+export function getJudgeDisplayName(judge: JudgeId): string {
+  const names: Record<JudgeId, string> = {
+    jp: "Jean-Pierre",
+    nana: "Nana",
+    chad: "Chad",
+    marco: "Marco",
+    crumb: "Professor Crumb",
+    mei: "Auntie Mei",
+    algo: "The Algorithm",
+    rye: "Detective Rye",
+  };
+  return names[judge] ?? judge;
 }
 
 // Tie-breaking: JP wins ties by iteration order. This matches the SQL
@@ -199,6 +430,18 @@ export function getHarshestJudge(
     if (tqi !== null && tqi < lowest) {
       lowest = tqi;
       harshest = name;
+    }
+  }
+  return harshest;
+}
+
+export function getHarshestJudgeFromVerdicts(verdicts: JudgeVerdict[]): JudgeId | null {
+  let harshest: JudgeId | null = null;
+  let lowest = Infinity;
+  for (const v of verdicts) {
+    if (v.tqi < lowest) {
+      lowest = v.tqi;
+      harshest = v.judge_id as JudgeId;
     }
   }
   return harshest;
@@ -236,6 +479,18 @@ export function getWinningJudge(
   return winner;
 }
 
+export function getWinningJudgeFromVerdicts(verdicts: JudgeVerdict[]): JudgeId | null {
+  let winner: JudgeId | null = null;
+  let best = -Infinity;
+  for (const v of verdicts) {
+    if (v.tqi > best) {
+      best = v.tqi;
+      winner = v.judge_id as JudgeId;
+    }
+  }
+  return winner;
+}
+
 interface JudgeIconRowProps {
   jpTqi: number | null;
   nanaTqi: number | null;
@@ -244,7 +499,7 @@ interface JudgeIconRowProps {
 }
 
 export function JudgeIconRow({ jpTqi, nanaTqi, chadTqi, size = 32 }: JudgeIconRowProps) {
-  const judges: [JudgeName, number | null][] = [
+  const judges: [JudgeId, number | null][] = [
     ["jp", jpTqi],
     ["nana", nanaTqi],
     ["chad", chadTqi],
@@ -259,6 +514,26 @@ export function JudgeIconRow({ jpTqi, nanaTqi, chadTqi, size = 32 }: JudgeIconRo
           judge={name}
           size={size}
           variant={!anyScored ? "muted" : tqi !== null ? "default" : "muted"}
+        />
+      ))}
+    </div>
+  );
+}
+
+interface VerdictIconRowProps {
+  verdicts: JudgeVerdict[];
+  size?: number;
+}
+
+export function VerdictIconRow({ verdicts, size = 32 }: VerdictIconRowProps) {
+  return (
+    <div style={{ display: "flex", gap: 4 }}>
+      {verdicts.map((v) => (
+        <JudgeAvatar
+          key={v.judge_id}
+          judge={v.judge_id as JudgeId}
+          size={size}
+          variant="default"
         />
       ))}
     </div>

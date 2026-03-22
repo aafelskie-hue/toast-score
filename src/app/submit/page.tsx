@@ -6,7 +6,9 @@ export const dynamic = "force-dynamic";
 import VerdictCard from "@/components/verdict-card";
 import ShareButton from "@/components/share-button";
 import TierBadge from "@/components/tier-badge";
-import { JudgeName, SubMetrics } from "@/lib/types";
+import JudgeSelector from "@/components/judge-selector";
+import { type JudgeId, FREE_JUDGE_IDS } from "@/lib/judges";
+import { SubMetrics, JudgeVerdict } from "@/lib/types";
 
 interface JudgeResultData {
   verdict: string;
@@ -21,13 +23,19 @@ interface ToastResult {
   nickname: string;
   official_tqi: number;
   official_tier: string;
-  judges: Record<JudgeName, JudgeResultData | null>;
+  judges: Record<string, JudgeResultData | null>;
+  verdicts: JudgeVerdict[];
 }
 
 const LOADING_MESSAGES = [
   "Jean-Pierre is examining your crumb structure...",
   "Nana is putting on her reading glasses...",
   "Chad is doing pre-toast stretches...",
+  "Marco is warming up his fury...",
+  "Professor Crumb is consulting the literature...",
+  "Auntie Mei is comparing this to hers...",
+  "The Algorithm is running diagnostics...",
+  "Detective Rye is investigating the scene...",
   "Consulting the bread sommelier...",
   "Checking if you've eaten today...",
   "Loading maximum hype...",
@@ -84,6 +92,9 @@ export default function SubmitPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ToastResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selectedJudges, setSelectedJudges] = useState<JudgeId[]>([
+    ...FREE_JUDGE_IDS,
+  ]);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const selected = e.target.files?.[0] ?? null;
@@ -99,6 +110,7 @@ export default function SubmitPage() {
     setPreview(null);
     setResult(null);
     setError(null);
+    setSelectedJudges([...FREE_JUDGE_IDS]);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -114,6 +126,7 @@ export default function SubmitPage() {
     if (nickname.trim()) {
       formData.append("nickname", nickname);
     }
+    formData.append("judges", selectedJudges.join(","));
 
     try {
       const res = await fetch("/api/rate", {
@@ -134,8 +147,6 @@ export default function SubmitPage() {
       setLoading(false);
     }
   }
-
-  const judgeOrder: JudgeName[] = ["jp", "nana", "chad"];
 
   return (
     <>
@@ -238,9 +249,11 @@ export default function SubmitPage() {
                 />
               </div>
 
+              <JudgeSelector onSelectionChange={setSelectedJudges} />
+
               <button
                 type="submit"
-                disabled={!file || loading}
+                disabled={!file || loading || selectedJudges.length !== 3}
                 className="rounded-lg px-6 py-3 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
                   backgroundColor: "var(--black)",
@@ -281,24 +294,37 @@ export default function SubmitPage() {
               </div>
             </div>
 
-            {/* Three verdict cards */}
+            {/* Verdict cards — dynamic from verdicts array */}
             <div className="grid grid-cols-1 md:grid-cols-3 items-start gap-2 md:gap-3 mb-6 md:mb-8">
-              {judgeOrder.map((judge, index) => {
-                const judgeData = result.judges[judge];
-                return (
+              {result.verdicts.map((v, index) => (
+                <VerdictCard
+                  key={v.judge_id}
+                  judge={v.judge_id as JudgeId}
+                  verdict={v.verdict}
+                  tqi={v.tqi}
+                  tier={v.tier}
+                  subMetrics={v.metrics}
+                  failed={false}
+                  animationDelay={index * 200}
+                  shareUrl={`/toast/${result.id}`}
+                />
+              ))}
+              {/* Show failed judges that aren't in verdicts */}
+              {Object.entries(result.judges)
+                .filter(([id, data]) => data === null && !result.verdicts.some((v) => v.judge_id === id))
+                .map(([id], index) => (
                   <VerdictCard
-                    key={judge}
-                    judge={judge}
-                    verdict={judgeData?.verdict ?? null}
-                    tqi={judgeData?.tqi ?? null}
-                    tier={judgeData?.tier ?? null}
-                    subMetrics={judgeData?.sub_metrics ?? null}
-                    failed={judgeData === null}
-                    animationDelay={index * 200}
+                    key={id}
+                    judge={id as JudgeId}
+                    verdict={null}
+                    tqi={null}
+                    tier={null}
+                    subMetrics={null}
+                    failed
+                    animationDelay={(result.verdicts.length + index) * 200}
                     shareUrl={`/toast/${result.id}`}
                   />
-                );
-              })}
+                ))}
             </div>
 
             {/* Share All */}

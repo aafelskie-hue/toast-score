@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { JudgeName } from "@/lib/types";
+import { type JudgeId } from "@/lib/judges";
 
 interface VerdictShareActionsProps {
   cardRef: React.RefObject<HTMLDivElement | null>;
   url: string;
-  judge: JudgeName;
+  judge: JudgeId;
   tqi: number;
 }
 

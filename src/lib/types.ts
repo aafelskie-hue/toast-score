@@ -1,3 +1,5 @@
+export type { JudgeId } from "./judges";
+
 export interface SubMetrics {
   browning_uniformity: number;
   crust_integrity: number;
@@ -13,6 +15,7 @@ export interface JudgeResponse {
   tqi: number;
 }
 
+/** @deprecated Use JudgeId instead */
 export type JudgeName = "jp" | "nana" | "chad";
 
 export interface JudgeResult {
@@ -20,6 +23,15 @@ export interface JudgeResult {
   tqi: number;
   tier: string;
   sub_metrics: SubMetrics;
+}
+
+export interface JudgeVerdict {
+  judge_id: string;
+  judge_name: string;
+  verdict: string;
+  tqi: number;
+  tier: string;
+  metrics: SubMetrics;
 }
 
 export interface ToastRecord {
@@ -43,11 +55,30 @@ export interface ToastRecord {
   chad_metrics: SubMetrics | null;
   featured: boolean;
   featured_category: string | null;
+  verdicts: JudgeVerdict[] | null;
 }
 
 export interface BottomShelfToast extends ToastRecord {
   lowest_tqi: number;
   harshest_judge: JudgeName;
+}
+
+export interface AppealRecord {
+  id: string;
+  toast_id: string;
+  stripe_session_id: string | null;
+  verdicts: JudgeVerdict[];
+  official_tqi: number;
+  official_tier: string;
+  created_at: string;
+}
+
+export interface CertificateRecord {
+  id: string;
+  toast_id: string;
+  stripe_session_id: string;
+  storage_path: string;
+  created_at: string;
 }
 
 export type Tier =

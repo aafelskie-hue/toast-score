@@ -3,6 +3,7 @@ import { getTopToastToday, getLeaderboard, getGallery } from "@/lib/queries";
 import HeroSection from "@/components/hero-section";
 import LeaderboardSection from "@/components/leaderboard-section";
 import GallerySection from "@/components/gallery-section";
+import MembershipBanner from "@/components/membership-banner";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -18,6 +19,7 @@ export default async function Home() {
   return (
     <main className="mx-auto px-4 pb-20 md:pb-0" style={{ maxWidth: 960 }}>
       <HeroSection toast={topToast} />
+      <MembershipBanner />
       <LeaderboardSection initialData={leaderboardData} />
       <GallerySection initialData={galleryData} />
 

@@ -5,7 +5,9 @@ import { checkRateLimit } from "@/lib/rate-limiter";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { callJudge } from "@/lib/anthropic";
 import { calculateTqi, deriveTier } from "@/lib/tqi";
-import { JudgeName, SubMetrics } from "@/lib/types";
+import { JUDGES, FREE_JUDGE_IDS, MEMBER_JUDGE_IDS, ALL_JUDGE_IDS, type JudgeId } from "@/lib/judges";
+import { getMembershipStatus } from "@/lib/membership";
+import { SubMetrics } from "@/lib/types";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -36,6 +38,7 @@ export async function POST(request: NextRequest) {
 
   const imageFile = formData.get("image") as File | null;
   const nicknameRaw = formData.get("nickname") as string | null;
+  const judgesRaw = formData.get("judges") as string | null;
 
   // 3. Validate image
   if (!imageFile) {
@@ -51,12 +54,48 @@ export async function POST(request: NextRequest) {
   // 4. Sanitize nickname
   const nickname = nicknameRaw?.trim().slice(0, 20) || "Anonymous Toaster";
 
-  // 5. Prepare image buffer
+  // 5. Parse and validate judge selection
+  let selectedJudges: JudgeId[];
+  if (judgesRaw) {
+    const parsed = judgesRaw.split(",").map((s) => s.trim()) as JudgeId[];
+    // Validate all IDs are known
+    const allValid = parsed.every((id) => ALL_JUDGE_IDS.includes(id));
+    if (!allValid || parsed.length !== 3) {
+      return NextResponse.json(
+        { error: "Select exactly 3 valid judges" },
+        { status: 400 }
+      );
+    }
+    // Check for duplicates
+    if (new Set(parsed).size !== 3) {
+      return NextResponse.json(
+        { error: "Duplicate judges are not allowed" },
+        { status: 400 }
+      );
+    }
+    selectedJudges = parsed;
+  } else {
+    selectedJudges = [...FREE_JUDGE_IDS];
+  }
+
+  // 6. If any member-only judges selected, verify membership
+  const hasMemberJudges = selectedJudges.some((id) => MEMBER_JUDGE_IDS.includes(id));
+  if (hasMemberJudges) {
+    const membership = await getMembershipStatus();
+    if (!membership.isMember) {
+      return NextResponse.json(
+        { error: "Bureau Membership required for exclusive judges" },
+        { status: 403 }
+      );
+    }
+  }
+
+  // 7. Prepare image buffer
   const arrayBuffer = await imageFile.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
   const ext = imageFile.type === "image/png" ? "png" : "jpg";
 
-  // 6. Strip metadata, resize, and compress for storage
+  // 8. Strip metadata, resize, and compress for storage
   const cleanBuffer = ext === "png"
     ? await sharp(buffer)
         .rotate()
@@ -69,7 +108,7 @@ export async function POST(request: NextRequest) {
         .jpeg({ quality: 80 })
         .toBuffer();
 
-  // 7. Generate ID and upload to Supabase Storage
+  // 9. Generate ID and upload to Supabase Storage
   const toastId = randomUUID();
   const supabase = getSupabaseServer();
 
@@ -85,46 +124,61 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Failed to upload image" }, { status: 500 });
   }
 
-  // 8. Get public URL
+  // 10. Get public URL
   const { data: urlData } = supabase.storage
     .from("toast-images")
     .getPublicUrl(`toasts/${toastId}.${ext}`);
   const imageUrl = urlData.publicUrl;
 
-  // 9. Resize image for Anthropic API
+  // 11. Resize image for Anthropic API
   const resizedBuffer = await sharp(cleanBuffer)
     .resize(1024, 1024, { fit: "inside", withoutEnlargement: true })
     .jpeg({ quality: 80 })
     .toBuffer();
   const base64 = resizedBuffer.toString("base64");
 
-  // 10. Call all three judges in parallel
-  const judges: JudgeName[] = ["jp", "nana", "chad"];
+  // 12. Call selected judges in parallel
   const results = await Promise.allSettled(
-    judges.map((j) => callJudge(j, base64, "image/jpeg"))
+    selectedJudges.map((j) => callJudge(j, base64, "image/jpeg"))
   );
 
-  // 11. Process results
+  // 13. Process results
   const judgeResults: Record<string, JudgeResultData | null> = {};
   const successfulTqis: number[] = [];
+  const verdicts: Array<{
+    judge_id: string;
+    judge_name: string;
+    verdict: string;
+    tqi: number;
+    tier: string;
+    metrics: SubMetrics;
+  }> = [];
 
-  for (let i = 0; i < judges.length; i++) {
-    const judgeName = judges[i];
+  for (let i = 0; i < selectedJudges.length; i++) {
+    const judgeId = selectedJudges[i];
     const result = results[i];
 
     if (result.status === "fulfilled") {
       const tqi = calculateTqi(result.value.sub_metrics);
       const tier = deriveTier(tqi);
-      judgeResults[judgeName] = {
+      judgeResults[judgeId] = {
         verdict: result.value.verdict,
         tqi,
         tier,
         sub_metrics: result.value.sub_metrics,
       };
       successfulTqis.push(tqi);
+      verdicts.push({
+        judge_id: judgeId,
+        judge_name: JUDGES[judgeId].displayName,
+        verdict: result.value.verdict,
+        tqi,
+        tier,
+        metrics: result.value.sub_metrics,
+      });
     } else {
-      console.error(`[rate] ${judgeName} judge failed:`, result.reason);
-      judgeResults[judgeName] = null;
+      console.error(`[rate] ${judgeId} judge failed:`, result.reason);
+      judgeResults[judgeId] = null;
     }
   }
 
@@ -136,12 +190,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 12. Official scores = average of successful judges, rounded to 2 decimal places
+  // 14. Official scores = average of successful judges, rounded to 2 decimal places
   const sum = successfulTqis.reduce((a, b) => a + b, 0);
   const officialTqi = Math.round((sum / successfulTqis.length) * 100) / 100;
   const officialTier = deriveTier(officialTqi);
 
-  // 13. Build DB row
+  // 15. Build DB row
   const jp = judgeResults.jp;
   const nana = judgeResults.nana;
   const chad = judgeResults.chad;
@@ -153,6 +207,7 @@ export async function POST(request: NextRequest) {
     nickname,
     official_tqi: officialTqi,
     official_tier: officialTier,
+    // Flat columns for backwards compatibility (core 3 only)
     jp_verdict: jp?.verdict ?? null,
     jp_tqi: jp?.tqi ?? null,
     jp_tier: jp?.tier ?? null,
@@ -165,6 +220,8 @@ export async function POST(request: NextRequest) {
     chad_tqi: chad?.tqi ?? null,
     chad_tier: chad?.tier ?? null,
     chad_metrics: chad?.sub_metrics ?? null,
+    // New JSONB column with all judges
+    verdicts,
   };
 
   const { error: insertError } = await supabase.from("toasts").insert(row);
@@ -174,17 +231,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Failed to save toast rating" }, { status: 500 });
   }
 
-  // 14. Return full result
+  // 16. Return full result
   return NextResponse.json({
     id: toastId,
     image_url: imageUrl,
     nickname,
     official_tqi: officialTqi,
     official_tier: officialTier,
-    judges: {
-      jp: judgeResults.jp,
-      nana: judgeResults.nana,
-      chad: judgeResults.chad,
-    },
+    judges: judgeResults,
+    verdicts,
   });
 }

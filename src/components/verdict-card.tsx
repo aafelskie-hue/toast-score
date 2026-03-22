@@ -1,14 +1,16 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { JudgeName, SubMetrics } from "@/lib/types";
+import { type JudgeId } from "@/lib/judges";
+import { JUDGES } from "@/lib/judges";
+import { SubMetrics } from "@/lib/types";
 import JudgeAvatar, { getJudgeDisplayName } from "./judge-avatar";
 import ToastStamp from "./toast-stamp";
 import TierBadge from "./tier-badge";
 import VerdictShareActions from "./verdict-share-actions";
 
 interface VerdictCardProps {
-  judge: JudgeName;
+  judge: JudgeId;
   verdict: string | null;
   tqi: number | null;
   tier: string | null;
@@ -19,11 +21,9 @@ interface VerdictCardProps {
   isWinner?: boolean;
 }
 
-const FAILURE_MESSAGES: Record<JudgeName, string> = {
-  jp: "Jean-Pierre has stormed out of the kitchen.",
-  nana: "Nana had to step out. She says she still loves you.",
-  chad: "Chad is at the gym. He'll catch the next one, bro.",
-};
+function getFailureMessage(judge: JudgeId): string {
+  return JUDGES[judge]?.failureMessage ?? "This judge is currently unavailable.";
+}
 
 const METRIC_LABELS: Record<string, string> = {
   browning_uniformity: "Browning Uniformity",
@@ -103,7 +103,7 @@ export default function VerdictCard({
 
         {failed ? (
           <p className="text-sm md:text-base" style={{ fontStyle: "italic", color: "#666" }}>
-            {FAILURE_MESSAGES[judge]}
+            {getFailureMessage(judge)}
           </p>
         ) : (
           <>

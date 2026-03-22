@@ -1,4 +1,5 @@
 import Link from "next/link";
+import MembershipLink from "./membership-link";
 
 export default function Nav() {
   return (
@@ -25,20 +26,23 @@ export default function Nav() {
           <span style={{ color: "#D4537E" }}> SCORE</span>
         </span>
       </Link>
-      <Link
-        href="/submit"
-        style={{
-          backgroundColor: "var(--pink)",
-          color: "#FFFFFF",
-          borderRadius: 12,
-          padding: "8px 16px",
-          fontWeight: 500,
-          fontSize: 14,
-          textDecoration: "none",
-        }}
-      >
-        Rate My Toast
-      </Link>
+      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <MembershipLink />
+        <Link
+          href="/submit"
+          style={{
+            backgroundColor: "var(--pink)",
+            color: "#FFFFFF",
+            borderRadius: 12,
+            padding: "8px 16px",
+            fontWeight: 500,
+            fontSize: 14,
+            textDecoration: "none",
+          }}
+        >
+          Rate My Toast
+        </Link>
+      </div>
     </nav>
   );
 }
